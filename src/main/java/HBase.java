@@ -153,6 +153,15 @@ public class HBase {
                 System.out.println("Your BFFID must be uniquely composed of letters and digits. Try again : ");
                 firstName = sc.nextLine();
             }
+            while(namesList.contains(firstName))
+            {
+                System.out.println("Sorry, this BFFID has been taken, choose another one, pal : ");
+                firstName = sc.nextLine();
+                while (!isAlpha(firstName)) {
+                    System.out.println("Your BFFID must be uniquely composed of letters and digits. Try again : ");
+                    firstName = sc.nextLine();
+                }
+            }
 
             System.out.println("Enter your age : ");
             value = sc.nextLine();
@@ -176,17 +185,21 @@ public class HBase {
                 System.out.println("HOW COULD YOU MISPELL THE NAME OF YOUR BFF?! Try again : ");
                 value = sc.nextLine();
             }
+            if(!namesList.contains(value))
+                System.out.println("Well, your BFF doesn't exist in our database, but it's okay you can have a virtual one. I won't judge.");
             HBase.addRecord(tableName, firstName, "friends", "BFF", value);
 
             do {
-                System.out.println("Do you wish to add a (useless) friend? y or n");
+                System.out.println("Do you wish to add a (useless) friend in the \"others\" section? y or n");
                 choice = sc.nextLine();
                 while (choice.charAt(0) != 'n' && choice.charAt(0) != 'y') {
                     System.out.println("YES = y AND NO = n. Now try again : ");
                     choice = sc.nextLine();
                 }
-                if(choice.charAt(0) == 'n')
+                if(choice.charAt(0) == 'n') {
                     d = false;
+                    break;
+                }
 
                 System.out.println("What is the name of this useless friend?");
                 value = sc.nextLine();
@@ -196,7 +209,7 @@ public class HBase {
                 }
                 friendsArray.add(value);
             }while(d);
-            for(String s : namesList)
+            for(String s : friendsArray)
             {
                 sb.append(s);
                 sb.append(", ");
@@ -205,11 +218,11 @@ public class HBase {
 
             HBase.getAllRecord(tableName);
 
-            System.out.println("Do you want to add a new person? y or n");
+            System.out.println("Do you want to add a new person (create another BFFID)? y or n");
             choice = sc.nextLine();
             while(choice.charAt(0) != 'n' && choice.charAt(0) != 'y')
             {
-                System.out.println("YES = y AND NO = n. Now try again : ");
+                System.out.println("YES = y AND NO = n. Now, try again : ");
                 choice = sc.nextLine();
             }
             if(choice.charAt(0) == 'n')
