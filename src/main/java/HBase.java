@@ -1,4 +1,6 @@
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 import org.apache.hadoop.conf.Configuration;
@@ -25,10 +27,10 @@ public class HBase {
 
         for (char c : chars) {
             if(!Character.isLetter(c) && !Character.isDigit(c)) {
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     /**
@@ -80,6 +82,29 @@ public class HBase {
         }
     }
 
+    public static ArrayList<String> getNames (String tableName) {
+        ArrayList<String> res = new ArrayList<String>();
+        String temp = new String();
+
+        try{
+            HTable table = new HTable(conf, tableName);
+            // initialisation du scanner
+            Scan s = new Scan();
+            // lecture du scanner
+            ResultScanner ss = table.getScanner(s);
+            // pour chaque résultat
+            for(Result r:ss){
+                for(KeyValue kv : r.raw()){
+                    if(!res.contains(new String(kv.getRow())))
+                        res.add(new String(kv.getRow()));
+                }
+            }
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+        return res;
+    }
+
     /**
      * Put (or insert) a row
      */
@@ -105,6 +130,7 @@ public class HBase {
     }
 
     public static void main(String[] args) throws Exception {
+        ArrayList<String> namesList = new ArrayList<String>();
         boolean c = true;
         String choice = "";
         String firstName;
@@ -114,11 +140,13 @@ public class HBase {
         String[] columnFamilies = { "info", "friends" };
 
         HBase.createTable(tableName, columnFamilies);
-        System.out.println("Welcome to the BFF Social Network!");
+        namesList = getNames(tableName);
+        System.out.println(Arrays.toString(namesList.toArray()));
+        /*System.out.println("Welcome to the BFF Social Network!");
         do {
             System.out.println("Enter your BFFID (remixed first name) : ");
             firstName = sc.nextLine();
-            while (isAlpha(firstName)) {
+            while (!isAlpha(firstName)) {
                 System.out.println("Your BFFID must be uniquely composed of letters and digits. Try again : ");
                 firstName = sc.nextLine();
             }
@@ -139,6 +167,14 @@ public class HBase {
             }
             HBase.addRecord(tableName, firstName, "info", "gender", value);
 
+            System.out.println("Who is your BFF alias BEST FRIEND FOREVER? ");
+            value = sc.nextLine();
+            while (!isAlpha(value)) {
+                System.out.println("HOW COULD YOU MISPELL THE NAME OF YOUR BFF?! Try again : ");
+                value = sc.nextLine();
+            }
+            HBase.addRecord(tableName, firstName, "friends", "BFF", value);
+
             HBase.getAllRecord(tableName);
 
             System.out.println("Do you want to add a new person? y or n");
@@ -147,12 +183,11 @@ public class HBase {
             {
                 System.out.println(choice + " " + choice.charAt(0));
                 System.out.println("YES = y AND NO = n. Now try again : ");
-                choice = "";
                 choice = sc.nextLine();
             }
             if(choice.charAt(0) == 'n')
                 c = false;
         }while(c);
-        System.out.println("See you again ~~");
+        System.out.println("See you again ~~");*/
     }
 }
