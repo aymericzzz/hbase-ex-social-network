@@ -131,7 +131,10 @@ public class HBase {
 
     public static void main(String[] args) throws Exception {
         ArrayList<String> namesList = new ArrayList<String>();
+        ArrayList<String> friendsArray = new ArrayList<String>();
+        StringBuilder sb = new StringBuilder();
         boolean c = true;
+        boolean d = true;
         String choice = "";
         String firstName;
         String value;
@@ -142,7 +145,7 @@ public class HBase {
         HBase.createTable(tableName, columnFamilies);
         namesList = getNames(tableName);
         System.out.println(Arrays.toString(namesList.toArray()));
-        /*System.out.println("Welcome to the BFF Social Network!");
+        System.out.println("Welcome to the BFF Social Network!");
         do {
             System.out.println("Enter your BFFID (remixed first name) : ");
             firstName = sc.nextLine();
@@ -175,19 +178,43 @@ public class HBase {
             }
             HBase.addRecord(tableName, firstName, "friends", "BFF", value);
 
+            do {
+                System.out.println("Do you wish to add a (useless) friend? y or n");
+                choice = sc.nextLine();
+                while (choice.charAt(0) != 'n' && choice.charAt(0) != 'y') {
+                    System.out.println("YES = y AND NO = n. Now try again : ");
+                    choice = sc.nextLine();
+                }
+                if(choice.charAt(0) == 'n')
+                    d = false;
+
+                System.out.println("What is the name of this useless friend?");
+                value = sc.nextLine();
+                while (!namesList.contains(value)) {
+                    System.out.println("I know (s)he is useless, but (s)he doesn't exist neither. Try again : ");
+                    value = sc.nextLine();
+                }
+                friendsArray.add(value);
+            }while(d);
+            for(String s : namesList)
+            {
+                sb.append(s);
+                sb.append(", ");
+            }
+            HBase.addRecord(tableName, firstName, "friends", "others", sb.toString());
+
             HBase.getAllRecord(tableName);
 
             System.out.println("Do you want to add a new person? y or n");
             choice = sc.nextLine();
             while(choice.charAt(0) != 'n' && choice.charAt(0) != 'y')
             {
-                System.out.println(choice + " " + choice.charAt(0));
                 System.out.println("YES = y AND NO = n. Now try again : ");
                 choice = sc.nextLine();
             }
             if(choice.charAt(0) == 'n')
                 c = false;
         }while(c);
-        System.out.println("See you again ~~");*/
+        System.out.println("See you again ~~");
     }
 }
